@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+	<head 
+		th:include="layout :: htmlhead">
+		<meta charset="utf-8">
+	</head>
+	<body>
+
+	<div class="container">
+
+		<nav th:replace="layout :: menu">(menu) </nav>
+		<div class="card" style="width: 10rem;">
+		<a href="form.html" th:href="@{/livro/novo}"
+			class="btn btn-outline-success btn-lg" role="button">Adicionar livro</a>
+		</div>
+		<table class="table table-borderless table-hover" id="livros">
+			<thead class="thead-dark"> 
+				<tr>
+					<th scope="col">Nome</th>
+					<th scope="col">Gênero</th>
+					<th scope="col">Autor</th>
+					<th scope="col">Data Publicação</th>
+					<th scope="col"></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr scope="row" th:each="umlivro : ${livros}">
+					<td th:text="${umlivro.nome}"></td>
+					<td th:text="${umlivro.genero}"></td>
+					<td th:text="${umlivro.autor}"></td>
+					<td th:text="${#dates.format(umlivro.dataPublicacao, 'dd/MM/yyyy HH:mm')}"></td>
+					<td><a th:href="@{'/livro/alterar/'+ ${umlivro.id}}" class="btn btn-outline-primary btn-lg" role="button">Alterar</a>
+					<button class='btn btn-outline-danger btn-lg js-delete' th:data-costumer-id="${umlivro.id}">Excluir</a>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<div th:include="layout :: footer" id="footer">(footer)</div>
+		<script type="text/javascript">
+           $(document).ready(function () {
+                $('#datetimepicker1').datetimepicker({
+                    format:"DD/MM/YYYY HH:mm"
+                });
+                $("#livros").on("click", ".js-delete", function(){
+                	var button = $(this);
+                	
+                	bootbox.confirm("Confirma a exclusão do livro?",
+                		function(result){
+	                	if(result){
+		                	$.ajax({
+		                		url: "/livro/remover/" +
+		                			button.attr("data-costumer-id"),
+		                		method: "GET",
+		                		success: function(){
+		                			window.location.href = "/livro/"
+		                		}
+		                	});
+	                	}
+                	});
+                });
+            });
+        </script>
+	</body>
+</html>
